@@ -21,6 +21,7 @@ const escalationFilter = document.getElementById("escalationFilter");
 
 const riskList = document.getElementById("riskList");
 const errorBox = document.getElementById("errorBox");
+const leadershipAlerts = document.getElementById("leadershipAlerts");
 
 const totalRisks = document.getElementById("totalRisks");
 const openRisks = document.getElementById("openRisks");
@@ -61,6 +62,7 @@ async function fetchRisks() {
 
         renderRisks();
         updateStats();
+        updateLeadershipAlerts();
     } catch (error) {
         showError("Unable to load risks. Please check Flask server.");
     }
@@ -477,5 +479,97 @@ statusFilter.addEventListener("change", renderRisks);
 priorityFilter.addEventListener("change", renderRisks);
 qapImpactFilter.addEventListener("change", renderRisks);
 escalationFilter.addEventListener("change", renderRisks);
+
+function updateLeadershipAlerts() {
+    const openHighPriorityRisks = risks.filter(risk =>
+        risk.status === "Open" &&
+        (risk.priority === "Blocker" || risk.priority === "Critical")
+    );
+
+    const overdueOpenRisks = risks.filter(risk =>
+        isRiskOverdue(risk)
+    );
+
+    const qapImpactOpenRisks = risks.filter(risk =>
+        risk.status === "Open" &&
+        risk.qap_impact === "Yes"
+    );
+
+    const escalationOpenRisks = risks.filter(risk =>
+        risk.status === "Open" &&
+        risk.escalation_required === "Yes"
+    );
+
+    const alerts = [];
+
+    if (openHighPriorityRisks.length > 0) {
+        alerts.push(`
+            <div class="alert-item alert-critical">
+                <div>🚨</div>
+                <div>
+                    ${openHighPriorityRisks.length} open Blocker/Critical risk(s) need leadership attention.
+                    <p>Review priority, ownership, mitigation, and closure plan.</p>
+                </div>
+            </div>
+        `);
+    }
+
+    if (overdueOpenRisks.length > 0) {
+        alerts.push(`
+            <div class="alert-item alert-warning">
+                <div>⚠️</div>
+                <div>
+                    ${overdueOpenRisks.length} overdue risk(s) require follow-up.
+                    <p>Target closure date has passed while the risk is still open.</p>
+                </div>
+            </div>
+        `);
+    }
+
+    if (qapImpactOpenRisks.length > 0) {
+        alerts.push(`
+            <div class="alert-item alert-qap">
+                <div>🔴</div>
+                <div>
+                    ${qapImpactOpenRisks.length} open QAP-impacting risk(s) may affect release approval.
+                    <p>Confirm readiness before QAP approval milestone.</p>
+                </div>
+            </div>
+        `);
+    }
+
+    if (escalationOpenRisks.length > 0) {
+        alerts.push(`
+            <div class="alert-item alert-escalation">
+                <div>📣</div>
+                <div>
+                    ${escalationOpenRisks.length} open risk(s) require escalation.
+                    <p>Ensure leadership or dependency owners are aligned.</p>
+                </div>
+            </div>
+        `);
+    }
+
+    if (alerts.length === 0 && risks.length > 0) {
+        alerts.push(`
+            <div class="alert-item alert-success">
+                <div>✅</div>
+                <div>
+                    No immediate leadership alerts.
+                    <p>No open blocker/critical, overdue, QAP-impacting, or escalation-required risks found.</p>
+                </div>
+            </div>
+        `);
+    }
+
+    if (risks.length === 0) {
+        leadershipAlerts.classList.add("hidden");
+        leadershipAlerts.innerHTML = "";
+        return;
+    }
+
+    leadershipAlerts.innerHTML = alerts.join("");
+    leadershipAlerts.classList.remove("hidden");
+}
 
 fetchRisks();
