@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Release Risk Tracker</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="page">
+        <div class="container">
+
+            <header class="header">
+                <div>
+                    <h1>Release Risk Tracker</h1>
+                    <p>Track release risks, QAP impact, escalation needs, overdue items, and target closure dates.</p>
+                </div>
+
+                <div class="header-actions">
+                    <span class="badge">Release Governance</span>
+                    <a class="export-button" href="/api/risks/export.csv">Export CSV</a>
+                </div>
+            </header>
+
+            <section class="stats">
+                <div class="card">
+                    <p>Total Risks</p>
+                    <h2 id="totalRisks">0</h2>
+                </div>
+
+                <div class="card">
+                    <p>Open Risks</p>
+                    <h2 id="openRisks">0</h2>
+                </div>
+
+                <div class="card danger-card">
+                    <p>Blocker / Critical</p>
+                    <h2 id="highPriorityRisks">0</h2>
+                </div>
+
+                <div class="card danger-card">
+                    <p>Overdue Risks</p>
+                    <h2 id="overdueRisks">0</h2>
+                </div>
+
+                <div class="card danger-card">
+                    <p>QAP Impact</p>
+                    <h2 id="qapImpactRisks">0</h2>
+                </div>
+
+                <div class="card danger-card">
+                    <p>Escalation Required</p>
+                    <h2 id="escalationRisks">0</h2>
+                </div>
+            </section>
+
+            <form class="form" id="riskForm">
+                <input type="text" id="titleInput" placeholder="Risk title e.g. QAP approval pending">
+                <input type="text" id="componentInput" placeholder="Component e.g. CCS, DDS, MAT">
+                <input type="text" id="releaseInput" placeholder="Release e.g. PI3 Release 1">
+                <input type="text" id="ownerInput" placeholder="Owner e.g. Pavan">
+
+                <select id="riskTypeInput">
+                    <option value="Scope Risk">Scope Risk</option>
+                    <option value="QA Risk">QA Risk</option>
+                    <option value="Deployment Risk">Deployment Risk</option>
+                    <option value="Dependency Risk">Dependency Risk</option>
+                    <option value="Environment Risk">Environment Risk</option>
+                    <option value="Business Risk">Business Risk</option>
+                </select>
+
+                <select id="priorityInput">
+                    <option value="Blocker">Blocker</option>
+                    <option value="Critical">Critical</option>
+                    <option value="Medium" selected>Medium</option>
+                    <option value="Low">Low</option>
+                </select>
+
+                <div class="field">
+                    <label for="targetClosureDateInput">Target Closure Date</label>
+                    <input type="date" id="targetClosureDateInput">
+                </div>
+
+                <div class="field">
+                    <label for="qapImpactInput">QAP Impact?</label>
+                    <select id="qapImpactInput">
+                        <option value="No" selected>No</option>
+                        <option value="Yes">Yes</option>
+                    </select>
+                </div>
+
+                <div class="field">
+                    <label for="escalationRequiredInput">Escalation Required?</label>
+                    <select id="escalationRequiredInput">
+                        <option value="No" selected>No</option>
+                        <option value="Yes">Yes</option>
+                    </select>
+                </div>
+
+                <textarea id="mitigationInput" placeholder="Mitigation plan e.g. Confirm owner and closure date before QAP approval"></textarea>
+
+                <button type="submit">Add Risk</button>
+            </form>
+
+            <section class="filters">
+                <input type="text" id="searchInput" placeholder="Search by title, component, release, owner, risk type, priority, status">
+
+                <select id="statusFilter">
+                    <option value="All">All Status</option>
+                    <option value="Open">Open</option>
+                    <option value="Closed">Closed</option>
+                </select>
+
+                <select id="priorityFilter">
+                    <option value="All">All Priority</option>
+                    <option value="Blocker">Blocker</option>
+                    <option value="Critical">Critical</option>
+                    <option value="Medium">Medium</option>
+                    <option value="Low">Low</option>
+                </select>
+
+                <select id="qapImpactFilter">
+                    <option value="All">All QAP Impact</option>
+                    <option value="Yes">QAP Impact: Yes</option>
+                    <option value="No">QAP Impact: No</option>
+                </select>
+
+                <select id="escalationFilter">
+                    <option value="All">All Escalation</option>
+                    <option value="Yes">Escalation: Yes</option>
+                    <option value="No">Escalation: No</option>
+                </select>
+            </section>
+
+            <div id="errorBox" class="error hidden"></div>
+
+            <section id="riskList" class="risk-list"></section>
+
+        </div>
+    </div>
+
+    <div id="editModal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div>
+                    <h2>Edit Risk</h2>
+                    <p>Update release risk details and save changes.</p>
+                </div>
+                <button type="button" class="close-button" id="closeEditModalButton">×</button>
+            </div>
+
+            <form class="form edit-form" id="editRiskForm">
+                <input type="hidden" id="editRiskId">
+
+                <input type="text" id="editTitleInput" placeholder="Risk title">
+                <input type="text" id="editComponentInput" placeholder="Component">
+                <input type="text" id="editReleaseInput" placeholder="Release">
+                <input type="text" id="editOwnerInput" placeholder="Owner">
+
+                <select id="editRiskTypeInput">
+                    <option value="Scope Risk">Scope Risk</option>
+                    <option value="QA Risk">QA Risk</option>
+                    <option value="Deployment Risk">Deployment Risk</option>
+                    <option value="Dependency Risk">Dependency Risk</option>
+                    <option value="Environment Risk">Environment Risk</option>
+                    <option value="Business Risk">Business Risk</option>
+                </select>
+
+                <select id="editPriorityInput">
+                    <option value="Blocker">Blocker</option>
+                    <option value="Critical">Critical</option>
+                    <option value="Medium">Medium</option>
+                    <option value="Low">Low</option>
+                </select>
+
+                <div class="field">
+                    <label for="editTargetClosureDateInput">Target Closure Date</label>
+                    <input type="date" id="editTargetClosureDateInput">
+                </div>
+
+                <div class="field">
+                    <label for="editQapImpactInput">QAP Impact?</label>
+                    <select id="editQapImpactInput">
+                        <option value="No">No</option>
+                        <option value="Yes">Yes</option>
+                    </select>
+                </div>
+
+                <div class="field">
+                    <label for="editEscalationRequiredInput">Escalation Required?</label>
+                    <select id="editEscalationRequiredInput">
+                        <option value="No">No</option>
+                        <option value="Yes">Yes</option>
+                    </select>
+                </div>
+
+                <textarea id="editMitigationInput" placeholder="Mitigation plan"></textarea>
+
+                <div class="modal-actions">
+                    <button type="submit">Save Changes</button>
+                    <button type="button" class="secondary-button" id="cancelEditButton">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
