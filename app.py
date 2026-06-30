@@ -41,6 +41,20 @@ def create_table():
         )
     """)
 
+    
+    existing_columns = conn.execute("PRAGMA table_info(risks)").fetchall()
+    column_names = [column["name"] for column in existing_columns]
+
+    if "target_closure_date" not in column_names:
+        conn.execute("ALTER TABLE risks ADD COLUMN target_closure_date TEXT")
+
+    if "qap_impact" not in column_names:
+        conn.execute("ALTER TABLE risks ADD COLUMN qap_impact TEXT NOT NULL DEFAULT 'No'")
+
+    if "escalation_required" not in column_names:
+        conn.execute("ALTER TABLE risks ADD COLUMN escalation_required TEXT NOT NULL DEFAULT 'No'")
+
+
     conn.commit()
     conn.close()
 
@@ -320,9 +334,15 @@ def validate_risk_data(title, component, release, owner, risk_type, priority, qa
     return None
 
 
+
 # -----------------------------
-# Run app
+# Run database setup
+# -----------------------------
+create_table()
+
+
+# -----------------------------
+# Run app locally
 # -----------------------------
 if __name__ == "__main__":
-    create_table()
     app.run(debug=True)
