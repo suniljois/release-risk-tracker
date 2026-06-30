@@ -35,6 +35,7 @@ const editRiskForm = document.getElementById("editRiskForm");
 const closeEditModalButton = document.getElementById("closeEditModalButton");
 const cancelEditButton = document.getElementById("cancelEditButton");
 const loadSampleDataButton = document.getElementById("loadSampleDataButton");
+const copySummaryButton = document.getElementById("copySummaryButton");
 
 const editRiskId = document.getElementById("editRiskId");
 const editTitleInput = document.getElementById("editTitleInput");
@@ -319,6 +320,93 @@ async function loadSampleData() {
     }
 }
 
+function getPriorityRank(priority) {
+    if (priority === "Blocker") {
+        return 0;
+    }
+
+    if (priority === "Critical") {
+        return 1;
+    }
+
+    if (priority === "Medium") {
+        return 2;
+    }
+
+    return 3;
+}
+
+function buildEmailSummary() {
+    if (risks.length === 0) {
+        return "No risks available yet. Please add or load risks before copying an email summary.";
+    }
+
+    const openRisksList = risks.filter(risk => risk.status === "Open");
+    const blockerCriticalCount = risks.filter(risk =>
+        risk.priority === "Blocker" || risk.priority === "Critical"
+    ).length;
+    const overdueCount = risks.filter(risk => isRiskOverdue(risk)).length;
+    const qapImpactCount = risks.filter(risk => risk.qap_impact === "Yes").length;
+    const escalationCount = risks.filter(risk => risk.escalation_required === "Yes").length;
+
+    const topOpenRisks = openRisksList
+        .slice()
+        .sort((a, b) => {
+            const priorityDiff = getPriorityRank(a.priority) - getPriorityRank(b.priority);
+
+            if (priorityDiff !== 0) {
+                return priorityDiff;
+            }
+
+            const aDate = a.target_closure_date || "9999-12-31";
+            const bDate = b.target_closure_date || "9999-12-31";
+            return aDate.localeCompare(bDate);
+        })
+        .slice(0, 5);
+
+    const topOpenLines = topOpenRisks.length > 0
+        ? topOpenRisks.map((risk, index) => {
+            const targetDate = risk.target_closure_date || "No target date";
+            return `${index + 1}. ${risk.title} | Priority: ${risk.priority} | Owner: ${risk.owner} | Component: ${risk.component} | Target Closure: ${targetDate}`;
+        }).join("\n")
+        : "- No open risks currently.";
+
+    return [
+        "Release Risk Summary",
+        "",
+        `Total Risks: ${risks.length}`,
+        `Open Risks: ${openRisksList.length}`,
+        `Blocker/Critical Risks: ${blockerCriticalCount}`,
+        `Overdue Risks: ${overdueCount}`,
+        `QAP Impact Risks: ${qapImpactCount}`,
+        `Escalation Required Risks: ${escalationCount}`,
+        "",
+        "Top Open Risks:",
+        topOpenLines
+    ].join("\n");
+}
+
+async function copyEmailSummary() {
+    const summaryText = buildEmailSummary();
+
+    if (risks.length === 0) {
+        alert(summaryText);
+        return;
+    }
+
+    try {
+        if (!navigator.clipboard || !navigator.clipboard.writeText) {
+            showError("Clipboard access is not available in this browser context.");
+            return;
+        }
+
+        await navigator.clipboard.writeText(summaryText);
+        alert("Release risk summary copied to clipboard.");
+    } catch (error) {
+        showError("Failed to copy summary. Please try again.");
+    }
+}
+
 function isRiskOverdue(risk) {
     if (!risk.target_closure_date) {
         return false;
@@ -494,6 +582,10 @@ cancelEditButton.addEventListener("click", closeEditModal);
 
 if (loadSampleDataButton) {
     loadSampleDataButton.addEventListener("click", loadSampleData);
+}
+
+if (copySummaryButton) {
+    copySummaryButton.addEventListener("click", copyEmailSummary);
 }
 
 editModal.addEventListener("click", function(event) {

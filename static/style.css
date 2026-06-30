@@ -86,6 +86,25 @@ body {
     cursor: not-allowed;
 }
 
+.copy-summary-button {
+    background: #1f2937;
+    color: white;
+    padding: 11px 14px;
+    border-radius: 10px;
+    font-weight: bold;
+    border: none;
+    cursor: pointer;
+}
+
+.copy-summary-button:hover {
+    background: #111827;
+}
+
+.copy-summary-button:disabled {
+    background: #6b7280;
+    cursor: not-allowed;
+}
+
 .leadership-alerts {
     background: white;
     border: 1px solid #dfe4ea;
