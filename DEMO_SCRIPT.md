@@ -1,74 +1,75 @@
-# Demo Script — Release Risk Tracker
+# Demo Script - Release Risk Tracker
 
-## 1. Introduction
+## Introduction
 
-This is a full-stack Release Risk Tracker built using Python Flask, SQLite, HTML, CSS, and JavaScript.
+Hi, this is Release Risk Tracker, a full-stack Flask application for release governance.
 
-It is designed to help release managers track risks across components, owners, target closure dates, QAP impact, and escalation needs.
+It helps release teams track risks, owners, mitigation plans, QAP impact, escalation requirements, and overdue closure commitments in one place.
 
-## 2. Dashboard View
+## Live Demo Link
 
-The dashboard shows:
+https://release-risk-tracker.onrender.com/
 
-- Total risks
-- Open risks
-- Blocker/Critical risks
+## Dashboard Explanation
+
+On the main dashboard, I can quickly see key release metrics:
+
+- Total Risks
+- Open Risks
+- Blocker/Critical Risks
+- Overdue Risks
+- QAP Impact Risks
+- Escalation Required Risks
+
+This gives an immediate view of release health.
+
+## Leadership Alert Panel
+
+The leadership panel automatically highlights:
+
+- Open blocker/critical risks
 - Overdue risks
-- QAP impact risks
-- Escalation required risks
+- QAP-impacting risks
+- Escalation-required risks
 
-## 3. Add Risk
+If no immediate concerns exist, it shows a positive success state.
 
-I can add a new release risk with:
+## Load Sample Data
 
-- Risk title
-- Component
-- Release
-- Owner
-- Risk type
-- Priority
-- Target closure date
-- QAP impact
-- Escalation required
-- Mitigation plan
+I click Load Sample Data to instantly populate realistic release risks across components.
 
-## 4. Edit Risk
+The loader is duplicate-safe, so repeated clicks do not insert the same sample risk twice.
 
-I can update any existing risk using the Edit button.
+## Add, Edit, and Delete Risk
 
-This supports real-life changes such as:
+I can add a new risk with title, component, release name, owner, type, priority, dates, governance flags, and mitigation.
 
-- Changing owner
-- Updating mitigation
-- Updating closure date
-- Marking QAP impact
-- Changing priority
+I can edit existing risks as details evolve, and delete risks that are no longer relevant.
 
-## 5. Overdue Highlight
+I can also toggle risk status between Open and Closed.
 
-If the target closure date is in the past and the risk is still open, the system highlights it as overdue.
+## Copy Email Summary
 
-## 6. Filters and Search
+I click Copy Summary to generate an email-ready release update that includes:
 
-I can filter by:
+- Totals and key risk counts
+- QAP and escalation counts
+- Top open risks with owner, priority, component, and target closure date
 
-- Status
-- Priority
-- QAP impact
-- Escalation required
+The summary is copied directly to clipboard for quick stakeholder communication.
 
-I can also search by title, component, release, owner, or mitigation.
+## CSV Export
 
-## 7. CSV Export
+I can export the full risk register as CSV for governance meetings, reporting, and leadership reviews.
 
-The tool can export the full risk register as a CSV file for reporting or leadership review.
+## Technical Architecture
 
-## 8. Technical Summary
+The flow is:
 
-The frontend is built using HTML, CSS, and JavaScript.
+Browser UI -> JavaScript fetch() -> Flask REST API -> SQLite Database
 
-The backend is built using Flask.
+The app is deployed on Render and versioned in GitHub.
 
-Data is stored in SQLite.
+## Business Value
 
-The frontend communicates with the backend through REST APIs.
+Release Risk Tracker improves governance by centralizing risk visibility, surfacing critical signals early, and making leadership reporting faster and more consistent.
