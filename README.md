@@ -173,24 +173,19 @@ Browser UI -> JavaScript fetch() -> Flask REST API -> SQLite Database
 
 ## Screenshots
 
-- [dashboard.png](screenshots/dashboard.png)
-- [leadership-alerts.png](screenshots/leadership-alerts.png)
-- [sample-data-loader.png](screenshots/sample-data-loader.png)
-- [copy-summary.png](screenshots/copy-summary.png)
-- [edit-risk.png](screenshots/edit-risk.png)
-- [csv-export.png](screenshots/csv-export.png)
+Screenshots should be captured from the live Render application:
 
-## Future Enhancements
+👉 https://release-risk-tracker.onrender.com/
 
-- PostgreSQL persistence
-- Login authentication
-- Role-based access
-- Jira integration
-- Teams/email alerts
-- Risk audit trail
-- Sorting and grouping
-- Excel export
+Capture the following views and save them in the `screenshots` folder:
 
-## Resume/Portfolio Summary
+- `screenshots/dashboard.png` — Main dashboard with risk list and summary cards  
+- `screenshots/leadership-alerts.png` — Leadership alert panel showing active risk alerts  
+- `screenshots/sample-data-loader.png` — After clicking "Load Sample Data"  
+- `screenshots/copy-summary.png` — Email summary copied and shown in editor/notepad  
+- `screenshots/edit-risk.png` — Edit risk modal view  
+- `screenshots/csv-export.png` — Downloaded CSV file or export action  
 
-Developed and deployed a full-stack Release Risk Tracker using Python Flask, SQLite, HTML, CSS, and JavaScript to manage release governance risks, track QAP impact, escalation needs, overdue closure dates, mitigation plans, and export leadership-ready risk reports.
+> Note: These screenshots demonstrate the end-to-end workflow including risk creation, governance visibility, and reporting features.
+``
+
