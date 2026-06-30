@@ -83,6 +83,7 @@ def health():
 # -----------------------------
 @app.route("/api/risks", methods=["GET"])
 def get_risks():
+    create_table()  # Ensure the table exists before querying
     conn = get_db()
 
     rows = conn.execute(
@@ -99,6 +100,7 @@ def get_risks():
 # -----------------------------
 @app.route("/api/risks", methods=["POST"])
 def add_risk():
+    create_table()  # Ensure the table exists before inserting
     data = request.get_json()
 
     title = data.get("title", "").strip()
@@ -158,6 +160,7 @@ def add_risk():
 # -----------------------------
 @app.route("/api/risks/<int:id>", methods=["PUT"])
 def update_risk(id):
+    create_table()  # Ensure the table exists before updating
     data = request.get_json()
 
     title = data.get("title", "").strip()
@@ -221,6 +224,7 @@ def update_risk(id):
 # -----------------------------
 @app.route("/api/risks/<int:id>/status", methods=["PATCH"])
 def toggle_status(id):
+    create_table()  # Ensure the table exists before toggling status
     conn = get_db()
 
     row = conn.execute(
@@ -254,6 +258,7 @@ def toggle_status(id):
 # -----------------------------
 @app.route("/api/risks/<int:id>", methods=["DELETE"])
 def delete_risk(id):
+    create_table()  # Ensure the table exists before deleting
     conn = get_db()
 
     row = conn.execute(
@@ -276,6 +281,7 @@ def delete_risk(id):
 # -----------------------------
 @app.route("/api/risks/export.csv", methods=["GET"])
 def export_csv():
+    create_table()  # Ensure the table exists before exporting
     conn = get_db()
 
     rows = conn.execute(
