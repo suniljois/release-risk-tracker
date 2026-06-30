@@ -67,6 +67,25 @@ body {
     background: #15803d;
 }
 
+.sample-data-button {
+    background: #0f766e;
+    color: white;
+    padding: 11px 14px;
+    border-radius: 10px;
+    font-weight: bold;
+    border: none;
+    cursor: pointer;
+}
+
+.sample-data-button:hover {
+    background: #0d5f59;
+}
+
+.sample-data-button:disabled {
+    background: #6b7280;
+    cursor: not-allowed;
+}
+
 .leadership-alerts {
     background: white;
     border: 1px solid #dfe4ea;

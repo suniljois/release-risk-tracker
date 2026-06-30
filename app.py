@@ -316,6 +316,124 @@ def export_csv():
 
 
 # -----------------------------
+# LOAD SAMPLE DATA
+# -----------------------------
+@app.route("/api/sample-data", methods=["POST"])
+def load_sample_data():
+    create_table()  # Ensure the table exists before inserting
+
+    sample_risks = [
+        {
+            "title": "QAP sign-off pending for CCS regression scope",
+            "component": "CCS",
+            "release_name": "R27.3",
+            "owner": "Asha",
+            "risk_type": "QA Risk",
+            "priority": "Critical",
+            "status": "Open",
+            "mitigation": "Daily defect triage and dedicated regression squad to close top failures before freeze.",
+            "target_closure_date": "2026-07-08",
+            "qap_impact": "Yes",
+            "escalation_required": "Yes"
+        },
+        {
+            "title": "MAT environment drift impacting integration tests",
+            "component": "MAT",
+            "release_name": "R27.3",
+            "owner": "Rohit",
+            "risk_type": "Environment Risk",
+            "priority": "Blocker",
+            "status": "Open",
+            "mitigation": "Lock environment baseline and run automated config parity checks before test window.",
+            "target_closure_date": "2026-07-05",
+            "qap_impact": "Yes",
+            "escalation_required": "Yes"
+        },
+        {
+            "title": "DDS dependency API contract not finalized",
+            "component": "DDS",
+            "release_name": "R27.3",
+            "owner": "Neha",
+            "risk_type": "Dependency Risk",
+            "priority": "Critical",
+            "status": "Open",
+            "mitigation": "Joint design review with partner team and temporary adapter fallback for current interface.",
+            "target_closure_date": "2026-07-10",
+            "qap_impact": "No",
+            "escalation_required": "Yes"
+        },
+        {
+            "title": "Pegasus deployment rollback playbook incomplete",
+            "component": "Pegasus",
+            "release_name": "R27.3",
+            "owner": "Meera",
+            "risk_type": "Deployment Risk",
+            "priority": "Medium",
+            "status": "Open",
+            "mitigation": "Complete rollback rehearsal in staging and add approval checkpoints in release runbook.",
+            "target_closure_date": "2026-07-12",
+            "qap_impact": "No",
+            "escalation_required": "No"
+        },
+        {
+            "title": "PM scope churn may impact committed release baseline",
+            "component": "PM",
+            "release_name": "R27.3",
+            "owner": "Kiran",
+            "risk_type": "Scope Risk",
+            "priority": "Medium",
+            "status": "Open",
+            "mitigation": "Freeze non-critical scope and route new asks through change-control board.",
+            "target_closure_date": "2026-07-09",
+            "qap_impact": "No",
+            "escalation_required": "No"
+        }
+    ]
+
+    conn = get_db()
+    inserted_count = 0
+    skipped_count = 0
+
+    for risk in sample_risks:
+        duplicate = conn.execute(
+            "SELECT id FROM risks WHERE title = ? AND release_name = ?",
+            (risk["title"], risk["release_name"])
+        ).fetchone()
+
+        if duplicate:
+            skipped_count += 1
+            continue
+
+        conn.execute(
+            """
+            INSERT INTO risks (
+                title, component, release_name, owner,
+                risk_type, priority, status,
+                mitigation, target_closure_date,
+                qap_impact, escalation_required
+            )
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            """,
+            (
+                risk["title"], risk["component"], risk["release_name"], risk["owner"],
+                risk["risk_type"], risk["priority"], risk["status"],
+                risk["mitigation"], risk["target_closure_date"],
+                risk["qap_impact"], risk["escalation_required"]
+            )
+        )
+        inserted_count += 1
+
+    conn.commit()
+    conn.close()
+
+    return jsonify({
+        "message": "Sample data processed",
+        "inserted": inserted_count,
+        "skipped": skipped_count
+    })
+
+
+# -----------------------------
 # Validation helper
 # -----------------------------
 def validate_risk_data(title, component, release, owner, risk_type, priority, qap, escalation):

@@ -34,6 +34,7 @@ const editModal = document.getElementById("editModal");
 const editRiskForm = document.getElementById("editRiskForm");
 const closeEditModalButton = document.getElementById("closeEditModalButton");
 const cancelEditButton = document.getElementById("cancelEditButton");
+const loadSampleDataButton = document.getElementById("loadSampleDataButton");
 
 const editRiskId = document.getElementById("editRiskId");
 const editTitleInput = document.getElementById("editTitleInput");
@@ -289,6 +290,35 @@ async function deleteRisk(riskId) {
     }
 }
 
+async function loadSampleData() {
+    try {
+        hideError();
+
+        if (loadSampleDataButton) {
+            loadSampleDataButton.disabled = true;
+            loadSampleDataButton.textContent = "Loading...";
+        }
+
+        const response = await fetch("/api/sample-data", {
+            method: "POST"
+        });
+
+        if (!response.ok) {
+            showError("Failed to load sample data.");
+            return;
+        }
+
+        await fetchRisks();
+    } catch (error) {
+        showError("Failed to load sample data.");
+    } finally {
+        if (loadSampleDataButton) {
+            loadSampleDataButton.disabled = false;
+            loadSampleDataButton.textContent = "Load Sample Data";
+        }
+    }
+}
+
 function isRiskOverdue(risk) {
     if (!risk.target_closure_date) {
         return false;
@@ -461,6 +491,10 @@ editRiskForm.addEventListener("submit", updateRisk);
 
 closeEditModalButton.addEventListener("click", closeEditModal);
 cancelEditButton.addEventListener("click", closeEditModal);
+
+if (loadSampleDataButton) {
+    loadSampleDataButton.addEventListener("click", loadSampleData);
+}
 
 editModal.addEventListener("click", function(event) {
     if (event.target === editModal) {
