@@ -1,51 +1,92 @@
-# Project Notes — Release Risk Tracker
+# Project Notes - Release Risk Tracker
 
 ## Problem Statement
 
-Release teams often manage risks across multiple systems, owners, and governance milestones. Risk data may be scattered across emails, spreadsheets, Jira, and meeting notes.
+Release governance risks are often tracked in disconnected tools such as spreadsheets, emails, and chat threads. This causes delayed visibility for blocker risks, unclear ownership, and inconsistent leadership reporting.
 
-This project provides a simple centralized tracker to manage release risks and highlight items requiring leadership attention.
+Release Risk Tracker was built to centralize release-risk management and improve governance decisions with real-time operational visibility.
 
-## Key Use Cases
+## Target Users
 
-1. Track blocker and critical release risks.
-2. Identify QAP-impacting risks.
-3. Monitor overdue target closure dates.
-4. Capture mitigation plans.
-5. Export risk register for leadership reporting.
+- Release Managers
+- Technical Program Managers
+- Delivery Managers
+- Governance and leadership stakeholders
 
-## User Persona
+## Key Workflows
 
-Primary user:
-
-- Release Manager
-- Technical Program Manager
-- Delivery Manager
-- Program Governance Lead
-
-## Core Entities
-
-Risk fields:
-
-- Title
-- Component
-- Release
-- Owner
-- Risk Type
-- Priority
-- Status
-- Target Closure Date
-- QAP Impact
-- Escalation Required
-- Mitigation
+1. Capture release risks with ownership, mitigation, and governance flags.
+2. Monitor dashboard KPIs for release health.
+3. Detect leadership concerns through alert panel signals.
+4. Use search and filters for targeted risk review.
+5. Update risk lifecycle using edit, status toggle, and delete actions.
+6. Load realistic sample data for demos and onboarding.
+7. Copy an email-ready summary for stakeholder communication.
+8. Export CSV for governance reporting.
 
 ## Architecture
 
-Browser frontend communicates with Flask backend using REST APIs.
+Browser UI -> JavaScript fetch() -> Flask REST API -> SQLite Database
 
-```text
-Browser UI
-   ↓ fetch()
-Flask API
-   ↓ SQL queries
-SQLite Database
+Frontend:
+
+- HTML templates
+- CSS styling
+- JavaScript for rendering, filtering, and API calls
+
+Backend:
+
+- Flask routes for CRUD and utility endpoints
+- SQLite persistence
+
+Deployment:
+
+- Render-hosted live app
+- Source code in GitHub repository suniljois/release-risk-tracker
+
+## Data Model Summary
+
+Primary entity: risk
+
+Key fields:
+
+- id
+- title
+- component
+- release_name
+- owner
+- risk_type
+- priority
+- status
+- mitigation
+- target_closure_date
+- qap_impact
+- escalation_required
+- created_at
+
+## Learning Outcomes
+
+- Built complete CRUD workflows in Flask with SQLite.
+- Added governance-focused analytics and alerting in the UI.
+- Implemented end-to-end features from API route to UI actions.
+- Practiced portfolio-focused documentation and demo storytelling.
+- Improved production-readiness mindset through deployment and validation.
+
+## Business Value
+
+- Improves release risk transparency across teams.
+- Enables early escalation for high-impact issues.
+- Supports QAP and closure-date governance controls.
+- Reduces manual reporting effort through summary copy and CSV export.
+- Provides a repeatable workflow for leadership readiness.
+
+## Future Roadmap
+
+- PostgreSQL persistence
+- Login authentication
+- Role-based access
+- Jira integration
+- Teams/email alerts
+- Risk audit trail
+- Sorting and grouping
+- Excel export
